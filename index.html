@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SOLESTAR — Shoes Store </title>
+  <meta name="description" content="Colorful, responsive shoes e‑commerce site with cart, filters, search, and checkout. Pure HTML/CSS/JS." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f172a; /* slate-900 */
+      --panel:#0b1220; /* darker */
+      --text:#e5e7eb; /* gray-200 */
+      --muted:#9ca3af; /* gray-400 */
+      --brand:#22d3ee; /* cyan-400 */
+      --brand-2:#a78bfa; /* violet-400 */
+      --accent:#f59e0b; /* amber-500 */
+      --danger:#ef4444; /* red-500 */
+      --success:#22c55e; /* green-500 */
+      --card:#111827; /* gray-900 */
+      --chip:#1f2937; /* gray-800 */
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:linear-gradient(120deg,var(--bg),#111b34 60%,#0c1428);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1200px;margin:0 auto;padding:16px}
+
+    /* Header */
+    header{
+      position:sticky;top:0;z-index:50;background:linear-gradient(180deg, rgba(15,23,42,.9), rgba(15,23,42,.6));backdrop-filter: blur(8px);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav{display:flex;align-items:center;gap:14px;padding:14px 0}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px}
+    .logo-badge{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;box-shadow:var(--shadow)}
+    .logo-badge svg{filter:drop-shadow(0 4px 8px rgba(0,0,0,.4))}
+
+    /* Search */
+    .search{flex:1;display:flex;gap:8px}
+    .search input{flex:1;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:#0b1220;color:var(--text);outline:none}
+    .search button{padding:12px 16px;border-radius:14px;border:0;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#07122a;font-weight:700;cursor:pointer}
+
+    /* Actions */
+    .actions{display:flex;gap:10px}
+    .icon-btn{position:relative;border:1px solid rgba(255,255,255,.08);background:#0b1220;border-radius:14px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px}
+    .badge{position:absolute;right:-6px;top:-6px;background:var(--accent);color:#111827;border-radius:999px;font-size:12px;font-weight:800;min-width:20px;height:20px;display:grid;place-items:center;border:2px solid #0b1220}
+
+    /* Layout */
+    .layout{display:grid;grid-template-columns:260px 1fr;gap:18px;margin-top:18px}
+    @media (max-width: 980px){.layout{grid-template-columns:1fr}}
+
+    /* Sidebar */
+    .sidebar{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:16px}
+    .sidebar h3{margin:6px 0 10px 0}
+    .filter-group{margin-bottom:16px}
+    .chip{display:inline-flex;align-items:center;gap:8px;background:var(--chip);border:1px solid rgba(255,255,255,.08);padding:8px 10px;border-radius:999px;margin:6px 8px 0 0;cursor:pointer}
+    .chip input{accent-color:var(--brand)}
+    .range{width:100%}
+    .sort{width:100%;padding:10px;border-radius:12px;background:#0b1220;border:1px solid rgba(255,255,255,.08);color:var(--text)}
+
+    /* Content */
+    .promo{background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(167,139,250,.18));border:1px dashed rgba(34,211,238,.5);padding:14px;border-radius:16px;margin-bottom:14px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media (max-width: 1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width: 630px){.grid{grid-template-columns:1fr}}
+
+    .card{position:relative;background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .2s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-3px);box-shadow:0 18px 45px rgba(0,0,0,.45)}
+    .tag{position:absolute;left:10px;top:10px;background:linear-gradient(135deg,var(--accent),#fb923c);color:#111827;font-weight:800;padding:6px 10px;border-radius:999px}
+    .wish{position:absolute;right:10px;top:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:8px;cursor:pointer}
+    .card img{width:100%;height:220px;object-fit:cover;background:#0b1220}
+    .p-body{padding:12px}
+    .p-title{font-weight:700}
+    .p-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin:6px 0}
+    .price{display:flex;align-items:center;gap:8px}
+    .price .mrp{text-decoration:line-through;color:#9ca3af;font-size:14px}
+    .stars{font-size:14px}
+    .color-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.5);display:inline-block;margin-right:6px}
+    .sizes{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .size{background:#0b1220;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px 8px;font-size:12px}
+    .p-actions{display:flex;gap:8px;margin-top:10px}
+    .btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer}
+    .btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#081225}
+    .btn-ghost{background:#0b1220;border:1px solid rgba(255,255,255,.08);color:var(--text)}
+
+    /* Drawer */
+    .drawer{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#0b1220;border-left:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);transition:right .3s ease;z-index:60;display:flex;flex-direction:column}
+    .drawer.open{right:0}
+    @media (max-width: 520px){.drawer{width:100%}}
+    .drawer header{position:sticky;top:0;background:#0b1220;border-bottom:1px solid rgba(255,255,255,.08)}
+    .drawer .content{padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto}
+    .cart-item{display:grid;grid-template-columns:72px 1fr auto;gap:10px;background:#0d162b;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px}
+    .qty{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.12);border-radius:10px}
+    .qty button{background:transparent;border:0;padding:8px 10px;cursor:pointer;color:var(--text)}
+    .qty input{width:36px;background:transparent;border:0;text-align:center;color:var(--text)}
+    .summary{margin-top:auto;background:#0d162b;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px}
+    .row{display:flex;justify-content:space-between;margin:6px 0;color:var(--muted)}
+    .row.total{color:var(--text);font-weight:800}
+    .promo-row{display:flex;gap:8px;margin-top:8px}
+    .promo-row input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:var(--text)}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;z-index:70}
+    .modal.open{display:grid}
+    .modal-card{width:min(680px,92vw);background:#0b1220;border:1px solid rgba(255,255,255,.1);border-radius:18px;box-shadow:var(--shadow)}
+    .modal-card header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}
+    .modal-card .body{padding:16px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width: 600px){.form-grid{grid-template-columns:1fr}}
+    .input{padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:var(--text);width:100%}
+    .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0d162b;border:1px solid rgba(255,255,255,.12);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:80}
+    .toast.show{display:block}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer">
+        <div class="logo-badge" aria-label="SO" title="SO">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.77 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" fill="#07122a"/>
+          </svg>
+        </div>
+        <div style="font-size:20px">SOLE<span style="background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent">STAR</span></div>
+      </div>
+
+      <div class="search">
+        <input id="search" type="search" placeholder="Search for shoes, brands, sneakers…" />
+        <button id="searchBtn">Search</button>
+      </div>
+
+      <div class="actions">
+        <button class="icon-btn" id="wishlistBtn" title="Wishlist">
+          <span class="badge" id="wishCount">0</span>
+          ❤️ <span class="hide-sm">Wishlist</span>
+        </button>
+        <button class="icon-btn" id="cartBtn" title="Cart">
+          <span class="badge" id="cartCount">0</span>
+          🛒 <span class="hide-sm">Cart</span>
+        </button>
+        <!-- Add inside header .actions (after cartBtn) -->
+<button class="icon-btn" id="loginBtn" title="Login">
+  👤 <span class="hide-sm">Login</span>
+</button>
+
+<!-- SIGN IN / SIGN UP MODAL -->
+<div class="modal" id="loginModal" aria-hidden="true">
+  <div class="modal-card">
+    <header>
+      <div style="font-weight:800">Welcome</div>
+      <button class="btn btn-ghost" id="closeLogin">✕</button>
+    </header>
+
+    <!-- Tab Switch -->
+    <div style="display:flex;gap:12px;justify-content:center;margin:16px 0">
+      <button class="btn btn-primary" id="signinTabBtn">Sign In</button>
+      <button class="btn btn-ghost" id="signupTabBtn">Sign Up</button>
+    </div>
+
+    <div class="body">
+      <!-- SIGN IN FORM -->
+      <div id="signinFormBox">
+        <form id="signinForm">
+          <div class="form-grid">
+            <input class="input" required type="email" placeholder="Email address" name="email" />
+            <input class="input" required type="password" placeholder="Password" name="password" />
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+            <label><input type="checkbox" /> Remember me</label>
+            <a href="#" style="color:var(--brand)">Forgot password?</a>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+            <button type="button" class="btn btn-ghost" id="cancelSignin">Cancel</button>
+            <button type="submit" class="btn btn-primary">Sign In</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- SIGN UP FORM -->
+      <div id="signupFormBox" style="display:none">
+        <form id="signupForm">
+          <div class="form-grid">
+            <input class="input" required type="text" placeholder="Full name" name="name" />
+            <input class="input" required type="email" placeholder="Email address" name="email" />
+            <input class="input" required type="password" placeholder="Password" name="password" />
+            <input class="input" required type="password" placeholder="Confirm password" name="confirm" />
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+            <button type="button" class="btn btn-ghost" id="cancelSignup">Cancel</button>
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      </div>
+    </div>
+  </header>
+
+  <main class="container layout">
+    <!-- Sidebar Filters -->
+    <aside class="sidebar">
+      <h3>Filters</h3>
+      <div class="filter-group">
+        <div style="font-weight:700;margin-bottom:6px">Gender</div>
+        <label class="chip"><input type="checkbox" class="f-gender" value="Men"> Men</label>
+        <label class="chip"><input type="checkbox" class="f-gender" value="Women"> Women</label>
+        <label class="chip"><input type="checkbox" class="f-gender" value="Kids"> Kids</label>
+      </div>
+      <div class="filter-group">
+        <div style="font-weight:700;margin-bottom:6px">Brand</div>
+        <div id="brandChips"></div>
+      </div>
+      <div class="filter-group">
+        <div style="font-weight:700;margin-bottom:6px">Max Price: <span id="priceVal">₹15000</span></div>
+        <input id="priceRange" class="range" type="range" min="999" max="20000" step="100" value="15000" />
+      </div>
+      <div class="filter-group">
+        <div style="font-weight:700;margin-bottom:6px">Sort By</div>
+        <select id="sort" class="sort">
+          <option value="popularity">Popularity</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Rating</option>
+          <option value="new">Newest</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <button class="btn btn-ghost" id="clearFilters">Clear Filters</button>
+      </div>
+      <div class="promo">🎉 Festive Offer: Use code <b>SAVE10</b> for 10% off at checkout!</div>
+    </aside>
+
+    <!-- Main content -->
+    <section>
+      <div class="promo" id="resultsInfo">Showing all products</div>
+      <div class="grid" id="grid"></div>
+    </section>
+  </main>
+
+  <!-- Cart Drawer -->
+  <aside class="drawer" id="drawer">
+    <header class="container" style="padding:12px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-weight:800">Your Cart</div>
+        <button class="btn btn-ghost" id="closeDrawer">Close ✕</button>
+      </div>
+    </header>
+    <div class="content" id="cartItems"></div>
+    <div class="summary">
+      <div class="row"><span>Subtotal</span><span id="subTotal">₹0</span></div>
+      <div class="row"><span>Shipping</span><span id="ship">₹99</span></div>
+      <div class="row"><span>Tax (5%)</span><span id="tax">₹0</span></div>
+      <div class="promo-row">
+        <input id="promo" placeholder="Have a promo code? (e.g., SAVE10)" />
+        <button class="btn btn-ghost" id="applyPromo">Apply</button>
+      </div>
+      <div class="row total"><span>Total</span><span id="grandTotal">₹0</span></div>
+      <button class="btn btn-primary" id="checkoutBtn">Proceed to Checkout</button>
+    </div>
+  </aside>
+  
+
+  <!-- Checkout Modal -->
+  <div class="modal" id="checkoutModal" aria-hidden="true">
+    <div class="modal-card">
+      <header>
+        <div style="font-weight:800">Checkout</div>
+        <button class="btn btn-ghost" id="closeModal">✕</button>
+      </header>
+      <div class="body">
+        <form id="checkoutForm">
+          <div class="form-grid">
+            <input class="input" required placeholder="Full Name" name="name" />
+            <input class="input" required type="email" placeholder="Email" name="email" />
+            <input class="input" required type="tel" placeholder="Phone" name="phone" />
+            <input class="input" required placeholder="City" name="city" />
+            <input class="input" required placeholder="Address Line 1" name="addr1" />
+            <input class="input" placeholder="Address Line 2" name="addr2" />
+            <input class="input" required placeholder="Pincode" name="zip" />
+            <select class="input" required name="payment">
+              <option value="COD">Cash on Delivery</option>
+              <option value="Card">Card (Demo)</option>
+              <option value="UPI">UPI (Demo)</option>
+            </select>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+            <button type="button" class="btn btn-ghost" id="cancelCheckout">Cancel</button>
+            <button type="submit" class="btn btn-primary">Place Order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Footer Section -->
+<footer style="margin-top:40px;background:#0b1220;border-top:1px solid rgba(255,255,255,.08);padding:40px 16px">
+  <div class="container" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px">
+    <div>
+      <h3 style="margin:0 0 12px;font-weight:700">SOLESTAR</h3>
+      <p style="color:var(--muted)">Your one-stop shop for stylish and comfortable footwear. Explore our latest collection and step up your game.</p>
+    </div>
+    <div>
+      <h4 style="margin:0 0 12px">Quick Links</h4>
+      <ul style="list-style:none;padding:0;line-height:1.8">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Shop</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="margin:0 0 12px">Contact</h4>
+      <p style="margin:4px 0">📍 New Delhi, India</p>
+      <p style="margin:4px 0">📧 support@solestar.com</p>
+      <p style="margin:4px 0">📞 +91-9876543210</p>
+    </div>
+    <div>
+      <h4 style="margin:0 0 12px">Follow Us</h4>
+      <p>
+        <a href="#">🌐 Facebook</a><br>
+        <a href="#">📸 Instagram</a><br>
+        <a href="#">🐦 Twitter</a>
+      </p>
+    </div>
+  </div>
+  <div style="text-align:center;color:var(--muted);margin-top:20px;font-size:14px">
+    © 2025 SOLESTAR. All rights reserved.
+  </div>
+</footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // --- Product Catalog (sample colorful images via Unsplash) ---
+    const PRODUCTS = [
+      {
+        id: 'sh001', name: 'Air Blitz Runner', brand: 'Nike', gender: 'Men',
+        price: 5499, mrp: 7999, rating: 4.6, colors:['#111','#f43f5e','#60a5fa'], sizes:[7,8,9,10,11],
+        img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop',
+        tags:['running','lightweight'], bestseller: true, date: '2025-07-02'
+      },
+      {
+        id: 'sh002', name: 'CloudStep Neo', brand: 'Adidas', gender: 'Women',
+        price: 4799, mrp: 6999, rating: 4.4, colors:['#f59e0b','#34d399','#111827'], sizes:[4,5,6,7,8],
+        img: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=1200&auto=format&fit=crop',
+        tags:['training','daily'], new: true, date: '2025-08-20'
+      },
+      {
+        id: 'sh003', name: 'Velocity Pro 2', brand: 'Puma', gender: 'Men',
+        price: 3999, mrp: 5999, rating: 4.2, colors:['#ef4444','#22d3ee'], sizes:[6,7,8,9,10],
+        img: 'https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=1200&auto=format&fit=crop',
+        tags:['sports','gym'], date: '2025-06-18'
+      },
+      {
+        id: 'sh004', name: 'Retro Court Classic', brand: 'Reebok', gender: 'Women',
+        price: 3599, mrp: 4999, rating: 4.1, colors:['#fff','#60a5fa'], sizes:[4,5,6,7,8,9],
+        img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop',
+        tags:['casual','white'], date: '2025-05-29'
+      },
+      {
+        id: 'sh005', name: 'StreetFlex High', brand: 'Vans', gender: 'Men',
+        price: 3299, mrp: 4599, rating: 4.3, colors:['#111827','#a78bfa'], sizes:[7,8,9,10],
+        img: 'https://www.hall-fast.com/media/catalog/product/cache/ab833bb0b3d3359e17eab379e32aa07f/f/c/fc15bkg.jpg',
+        tags:['skate','street'], date: '2025-07-14'
+      },
+      {
+        id: 'sh006', name: 'Ultralite Sprint', brand: 'ASICS', gender: 'Women',
+        price: 4299, mrp: 6299, rating: 4.5, colors:['#22c55e','#22d3ee'], sizes:[5,6,7,8,9],
+        img: 'https://m.media-amazon.com/images/I/81tlEuu20AL._UY1000_.jpg',
+        tags:['running','race'], date: '2025-08-10'
+      },
+      {
+        id: 'sh007', name: 'Mini Sprinty', brand: 'Skechers', gender: 'Kids',
+        price: 1999, mrp: 2799, rating: 4.0, colors:['#34d399','#f472b6'], sizes:[1,2,3,4],
+        img: 'https://di2ponv0v5otw.cloudfront.net/posts/2022/08/03/62eb5eb7c02686130939ce57/m_62eb8b7502760bb62d7bcb7d.jpeg',
+        tags:['kids','colorful'], date: '2025-03-05'
+      },
+      {
+        id: 'sh008', name: 'Zen Knit Slip-On', brand: 'New Balance', gender: 'Men',
+        price: 4899, mrp: 7499, rating: 4.7, colors:['#111827','#9ca3af'], sizes:[7,8,9,10,11],
+        img: 'https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=1200&auto=format&fit=crop',
+        tags:['comfort','slipon'], bestseller:true, date: '2025-07-28'
+      },
+      {
+        id: 'sh009', name: 'Aurora Glide', brand: 'Nike', gender: 'Women',
+        price: 5699, mrp: 8299, rating: 4.8, colors:['#f472b6','#22d3ee'], sizes:[4,5,6,7,8,9],
+        img: 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?q=80&w=1200&auto=format&fit=crop',
+        tags:['premium','running'], new:true, date: '2025-08-21'
+      },
+      {
+        id: 'sh010', name: 'TrailRider GTX', brand: 'Salomon', gender: 'Men',
+        price: 7499, mrp: 9999, rating: 4.6, colors:['#111827','#34d399'], sizes:[7,8,9,10],
+        img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1200&auto=format&fit=crop',
+        tags:['outdoor','trail'], date: '2025-04-12'
+      },
+
+      {
+        id: 'sh009', name: 'Aurora Glide', brand: 'Nike', gender: 'Men',
+        price: 5699, mrp: 8299, rating: 4.8, colors:['#f472b6','#22d3ee'], sizes:[4,5,6,7,8,9],
+        img: 'https://assets.ajio.com/medias/sys_master/root/20240806/ceBM/66b218d31d763220fa62009a/-473Wx593H-700191363-brown-MODEL.jpg',
+        tags:['premium','running'], new:true, date: '2025-08-21'
+      },
+
+      {
+        id: 'sh009', name: 'BataK30', brand: 'Bata', gender: 'Women',
+        price: 5699, mrp: 8299, rating: 4.8, colors:['#f472b6','#22d3ee'], sizes:[4,5,6,7,8,9],
+        img: 'https://www.tracerindia.com/cdn/shop/files/1_a435560c-9b5e-4e7d-b1f4-4d81ecd11c85.jpg?v=1702054676&width=1445',
+        tags:['premium','running'], new:true, date: '2025-08-21'
+      },
+
+      {
+        id: 'sh009', name: 'BataT$0', brand: 'Bata', gender: 'Men',
+        price: 5699, mrp: 8299, rating: 4.8, colors:['#f472b6','#22d3ee'], sizes:[4,5,6,7,8,9],
+        img: 'https://www.zoomshoes.in/cdn/shop/files/32_2.jpg?v=1688556586',
+        tags:['premium','running'], new:true, date: '2025-08-21'
+      },
+
+      {
+        id: 'sh009', name: 'PumaZx6', brand: 'Puma', gender: 'Women',
+        price: 5699, mrp: 8299, rating: 4.8, colors:['#f472b6','#22d3ee'], sizes:[4,5,6,7,8,9],
+        img: 'https://img.clevup.in/352617/casual-shoes-1707911015192_SKU-6546_0.jpg?format=webp',
+        tags:['premium','running'], new:true, date: '2025-08-21'
+      },
+
+      {
+        id: 'sh009', name: 'Puma402', brand: 'Puma', gender: 'Men',
+        price: 5699, mrp: 8299, rating: 4.8, colors:['#f472b6','#22d3ee'], sizes:[4,5,6,7,8,9],
+        img: 'https://www.jiomart.com/images/product/original/rvvrfywnhf/birde-stylish-comfortable-blue-sports-shoes-for-men-s-product-images-rvvrfywnhf-0-202305250812.jpg?im=Resize=(1000,1000)',
+        tags:['premium','running'], new:true, date: '2025-08-21'
+      },
+
+    ];
+
+    // --- State ---
+    const state = {
+      query: '',
+      genders: new Set(),
+      brands: new Set(),
+      maxPrice: 15000,
+      sort: 'popularity',
+      cart: JSON.parse(localStorage.getItem('cart')||'[]'),
+      wishlist: new Set(JSON.parse(localStorage.getItem('wishlist')||'[]')),
+      promo: null,
+    };
+
+    // --- Helpers ---
+    const formatINR = n => '₹' + n.toLocaleString('en-IN');
+    const byId = id => document.getElementById(id);
+    const showToast = (msg, type='info') => {
+      const t = byId('toast');
+      t.textContent = msg;
+      t.style.borderColor = type==='error'? 'rgba(239,68,68,.45)':'rgba(34,211,238,.45)';
+      t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), 2200);
+    };
+
+    // --- Init brand chips ---
+    const uniqueBrands = [...new Set(PRODUCTS.map(p=>p.brand))];
+    const brandChips = byId('brandChips');
+    brandChips.innerHTML = uniqueBrands.map(b=>`<label class="chip"><input type="checkbox" class="f-brand" value="${b}"> ${b}</label>`).join('');
+
+    // --- Filtering & Sorting ---
+    function applyFilters(){
+      let list = PRODUCTS.filter(p => p.price <= state.maxPrice);
+      if(state.query){
+        const q = state.query.toLowerCase();
+        list = list.filter(p => (p.name+p.brand+p.tags.join(' ')).toLowerCase().includes(q));
+      }
+      if(state.genders.size){ list = list.filter(p => state.genders.has(p.gender)); }
+      if(state.brands.size){ list = list.filter(p => state.brands.has(p.brand)); }
+
+      switch(state.sort){
+        case 'price-asc': list.sort((a,b)=>a.price-b.price); break;
+        case 'price-desc': list.sort((a,b)=>b.price-a.price); break;
+        case 'rating': list.sort((a,b)=>b.rating-a.rating); break;
+        case 'new': list.sort((a,b)=> new Date(b.date)-new Date(a.date)); break;
+        default: list.sort((a,b)=> (b.bestseller?1:0) - (a.bestseller?1:0) || b.rating-a.rating); break;
+      }
+
+      renderGrid(list);
+      byId('resultsInfo').textContent = `Showing ${list.length} result(s)`;
+    }
+
+    // --- Render Products ---
+    function renderGrid(items){
+      const grid = byId('grid');
+      grid.innerHTML = items.map(p => {
+        const wished = state.wishlist.has(p.id);
+        const pct = Math.round((1 - p.price/p.mrp)*100);
+        return `
+          <article class="card">
+            ${p.bestseller?'<span class="tag">Bestseller</span>':''}
+            ${p.new?'<span class="tag" style="left:auto;right:10px;background:linear-gradient(135deg,#34d399,#10b981);">New</span>':''}
+            <button class="wish" aria-label="Wishlist" data-wish="${p.id}">${wished?'💖':'🤍'}</button>
+            <img src="${p.img}" alt="${p.name}" loading="lazy"/>
+            <div class="p-body">
+              <div class="p-title">${p.name}</div>
+              <div class="p-meta">
+                <span>${p.brand} • ${p.gender}</span>
+                <span class="stars">⭐ ${p.rating}</span>
+              </div>
+              <div class="price">
+                <div style="font-weight:800">${formatINR(p.price)}</div>
+                <div class="mrp">${formatINR(p.mrp)}</div>
+                <div style="color:var(--success);font-weight:700">${pct}% off</div>
+              </div>
+              <div style="margin-top:8px">
+                ${p.colors.map(c=>`<span class="color-dot" style="background:${c}"></span>`).join('')}
+              </div>
+              <div class="sizes">
+                ${p.sizes.map(s=>`<span class="size">UK ${s}</span>`).join('')}
+              </div>
+              <div class="p-actions">
+                <button class="btn btn-primary" data-add="${p.id}">🛒 Add to Cart</button>
+                <button class="btn btn-ghost" data-buy="${p.id}">⚡ Buy Now</button>
+              </div>
+            </div>
+          </article>`;
+      }).join('');
+    }
+
+    // --- Cart Logic ---
+    function persist(){ localStorage.setItem('cart', JSON.stringify(state.cart)); localStorage.setItem('wishlist', JSON.stringify([...state.wishlist])); }
+
+    function addToCart(id){
+      const item = state.cart.find(i=>i.id===id);
+      if(item){ item.qty++; }
+      else{ const p = PRODUCTS.find(x=>x.id===id); state.cart.push({id, qty:1, price:p.price}); }
+      persist(); updateCartUI(); showToast('Added to cart ✅');
+    }
+    function removeFromCart(id){ state.cart = state.cart.filter(i=>i.id!==id); persist(); updateCartUI(); }
+    function changeQty(id, delta){ const it = state.cart.find(i=>i.id===id); if(!it) return; it.qty = Math.max(1, it.qty + delta); persist(); updateCartUI(); }
+
+    function calcSummary(){
+      const sub = state.cart.reduce((s,i)=>{
+        const p = PRODUCTS.find(x=>x.id===i.id); return s + i.qty * (p? p.price: i.price);
+      },0);
+      const tax = Math.round(sub * 0.05);
+      let total = sub + tax + (sub>0?99:0);
+      if(state.promo==='SAVE10') total = Math.round(total * 0.9);
+      return {sub, tax, total};
+    }
+
+    function updateCartUI(){
+      byId('cartCount').textContent = state.cart.reduce((s,i)=>s+i.qty,0);
+      const wrap = byId('cartItems');
+      if(state.cart.length===0){ wrap.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px">Your cart is empty.</div>'; }
+      else {
+        wrap.innerHTML = state.cart.map(i=>{
+          const p = PRODUCTS.find(x=>x.id===i.id);
+          return `
+            <div class="cart-item">
+              <img src="${p.img}" alt="${p.name}" style="width:72px;height:72px;object-fit:cover;border-radius:10px"/>
+              <div>
+                <div style="font-weight:700">${p.name}</div>
+                <div style="color:var(--muted);font-size:14px">${p.brand} • ${formatINR(p.price)}</div>
+                <div class="qty">
+                  <button data-dec="${i.id}">−</button>
+                  <input value="${i.qty}" readonly />
+                  <button data-inc="${i.id}">+</button>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:end;gap:8px">
+                <div style="font-weight:800">${formatINR(p.price*i.qty)}</div>
+                <button class="btn btn-ghost" data-remove="${i.id}">Remove</button>
+              </div>
+            </div>`
+        }).join('');
+      }
+      const {sub,tax,total} = calcSummary();
+      byId('subTotal').textContent = formatINR(sub);
+      byId('tax').textContent = formatINR(tax);
+      byId('grandTotal').textContent = formatINR(total);
+    }
+
+    // --- Wishlist ---
+    function toggleWish(id){
+      if(state.wishlist.has(id)) state.wishlist.delete(id); else state.wishlist.add(id);
+      persist(); applyFilters(); updateWishCount();
+    }
+    function updateWishCount(){ byId('wishCount').textContent = state.wishlist.size; }
+
+    // --- Checkout ---
+    function openDrawer(){ byId('drawer').classList.add('open'); }
+    function closeDrawer(){ byId('drawer').classList.remove('open'); }
+    function openModal(){ byId('checkoutModal').classList.add('open'); }
+    function closeModal(){ byId('checkoutModal').classList.remove('open'); }
+
+    // --- Event Listeners ---
+    document.addEventListener('click', (e)=>{
+      const add = e.target.closest('[data-add]');
+      if(add){ addToCart(add.getAttribute('data-add')); return; }
+      const buy = e.target.closest('[data-buy]');
+      if(buy){ addToCart(buy.getAttribute('data-buy')); openDrawer(); return; }
+      const wish = e.target.closest('[data-wish]');
+      if(wish){ toggleWish(wish.getAttribute('data-wish')); return; }
+      const inc = e.target.closest('[data-inc]');
+      if(inc){ changeQty(inc.getAttribute('data-inc'), +1); return; }
+      const dec = e.target.closest('[data-dec]');
+      if(dec){ changeQty(dec.getAttribute('data-dec'), -1); return; }
+      const rem = e.target.closest('[data-remove]');
+      if(rem){ removeFromCart(rem.getAttribute('data-remove')); return; }
+    });
+
+    byId('cartBtn').onclick = openDrawer;
+    byId('closeDrawer').onclick = closeDrawer;
+
+    // Filters
+    byId('priceRange').oninput = (e)=>{ state.maxPrice = +e.target.value; byId('priceVal').textContent = formatINR(state.maxPrice); applyFilters(); };
+    document.querySelectorAll('.f-gender').forEach(cb=> cb.onchange = (e)=>{ e.target.checked? state.genders.add(e.target.value): state.genders.delete(e.target.value); applyFilters(); });
+    document.querySelectorAll('.f-brand').forEach(cb=> cb.onchange = (e)=>{ e.target.checked? state.brands.add(e.target.value): state.brands.delete(e.target.value); applyFilters(); });
+    byId('sort').onchange = (e)=>{ state.sort = e.target.value; applyFilters(); };
+    byId('clearFilters').onclick = ()=>{
+      state.query=''; byId('search').value='';
+      state.genders.clear(); document.querySelectorAll('.f-gender').forEach(cb=>cb.checked=false);
+      state.brands.clear(); document.querySelectorAll('.f-brand').forEach(cb=>cb.checked=false);
+      state.maxPrice=15000; byId('priceRange').value=15000; byId('priceVal').textContent = formatINR(15000);
+      state.sort='popularity'; byId('sort').value='popularity';
+      applyFilters();
+    };
+
+    // Search
+    function doSearch(){ state.query = byId('search').value.trim(); applyFilters(); }
+    byId('searchBtn').onclick = doSearch;
+    byId('search').addEventListener('keydown', e=>{ if(e.key==='Enter') doSearch(); });
+
+    // Promo
+    byId('applyPromo').onclick = ()=>{
+      const code = byId('promo').value.trim().toUpperCase();
+      if(!code){ showToast('Enter a promo code'); return; }
+      if(code==='SAVE10'){ state.promo = 'SAVE10'; showToast('Promo applied 🎉'); updateCartUI(); }
+      else { showToast('Invalid code', 'error'); }
+    };
+
+    // Checkout modal controls
+    byId('checkoutBtn').onclick = ()=>{ if(state.cart.length===0){ showToast('Your cart is empty', 'error'); return; } openModal(); };
+    byId('closeModal').onclick = closeModal;
+    byId('cancelCheckout').onclick = closeModal;
+
+    byId('checkoutForm').onsubmit = (e)=>{
+      e.preventDefault();
+      const orderId = 'ORD' + Math.random().toString(36).slice(2,8).toUpperCase();
+      showToast(`Order ${orderId} placed! ✅`);
+      state.cart = []; persist(); updateCartUI(); closeModal(); closeDrawer();
+    };
+
+    // Wishlist & cart counts on load
+    updateCartUI(); updateWishCount();
+    // Initial render
+    applyFilters();
+   // --- Sign in / Sign up Modal ---
+function openLogin(){ byId('loginModal').classList.add('open'); }
+function closeLogin(){ byId('loginModal').classList.remove('open'); }
+
+byId('loginBtn').onclick = openLogin;
+byId('closeLogin').onclick = closeLogin;
+byId('cancelSignin').onclick = closeLogin;
+byId('cancelSignup').onclick = closeLogin;
+
+// Tab switch
+const signinBox = byId('signinFormBox');
+const signupBox = byId('signupFormBox');
+const signinTabBtn = byId('signinTabBtn');
+const signupTabBtn = byId('signupTabBtn');
+
+signinTabBtn.onclick = () => {
+  signinBox.style.display = 'block';
+  signupBox.style.display = 'none';
+  signinTabBtn.classList.add('btn-primary'); signinTabBtn.classList.remove('btn-ghost');
+  signupTabBtn.classList.add('btn-ghost'); signupTabBtn.classList.remove('btn-primary');
+};
+
+signupTabBtn.onclick = () => {
+  signinBox.style.display = 'none';
+  signupBox.style.display = 'block';
+  signupTabBtn.classList.add('btn-primary'); signupTabBtn.classList.remove('btn-ghost');
+  signinTabBtn.classList.add('btn-ghost'); signinTabBtn.classList.remove('btn-primary');
+};
+
+// Form submit (demo)
+byId('signinForm').onsubmit = (e)=>{
+  e.preventDefault();
+  showToast("Signed in successfully ✅");
+  closeLogin();
+};
+
+byId('signupForm').onsubmit = (e)=>{
+  e.preventDefault();
+  const pwd = e.target.password.value;
+  const confirm = e.target.confirm.value;
+  if(pwd !== confirm){
+    showToast("Passwords do not match ❌", "error");
+    return;
+  }
+  showToast("Account created 🎉");
+  closeLogin();
+};
+
+    
+  </script>
+</body>
+</html>
